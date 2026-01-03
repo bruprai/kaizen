@@ -31,9 +31,6 @@ export const DailyProgress: React.FC = () => {
     }
   };
   const handleChange = (id: string, value: string) => {
-    console.log("handleChange", id, value);
-    console.log("itemRefs", itemRefs.current);
-    console.log("items", items);
     setItems((prevItems) =>
       prevItems.map((prevItem) =>
         prevItem.id === id ? { ...prevItem, text: value } : prevItem
@@ -64,10 +61,6 @@ export const DailyProgress: React.FC = () => {
       items[index].text === "" &&
       items.length > 1
     ) {
-      console.log("itemRefs", itemRefs.current);
-      console.log("items", items);
-      console.log("backspace", items[index], index);
-
       event.preventDefault();
       setItems((prevItems) =>
         prevItems.filter((_, i) => {
