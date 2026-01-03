@@ -1,0 +1,102 @@
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+.app-name {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+  font-size: 6rem;
+  letter-spacing: 4px;
+  margin-top: 10rem;
+  font-weight: bold;
+  color: #48576e;
+  font-family: "Roboto", sans-serif;
+}
+.app-name span:first-child {
+  color: orange;
+  border-top: 3px solid #48576e;
+}
+.app-name span:last-child {
+  border-bottom: 3px solid #48576e;
+}
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Custom styles */
+
+.date-display {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+}
+.date-display strong {
+  font-size: 36px;
+  margin: 5px;
+}
+.daily-progress {
+  margin-top: 100px;
+  color: #48576e;
+  text-align: left;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.progress-input {
+  border: none;
+  border-radius: 4px;
+  background-color: #eee;
+  color: #000;
+  padding: 16px 8px;
+  font-size: 1rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.3s ease-in-out;
+}
+.progress-input:focus {
+  border-bottom-color: #007bff;
+}
