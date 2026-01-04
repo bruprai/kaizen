@@ -1,13 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-
-interface ProgressItem {
-  id: string;
-  text: string;
-}
-const initEmptyProgressItem = () => ({ id: `${Date.now()}`, text: "" });
+import { createNewProgressItem, type ProgressItem } from "./types";
 
 export const DailyProgress: React.FC = () => {
-  const [items, setItems] = useState<ProgressItem[]>([initEmptyProgressItem()]);
+  const [items, setItems] = useState<ProgressItem[]>([createNewProgressItem()]);
   const itemRefs = useRef<Map<string, HTMLInputElement | null>>(new Map());
 
   useEffect(() => {
@@ -47,7 +42,7 @@ export const DailyProgress: React.FC = () => {
       const currentItem = items[index];
       console.log("currentItem", currentItem);
       if (currentItem.text.trim() !== "" || index === items.length - 1) {
-        const newItem: ProgressItem = initEmptyProgressItem();
+        const newItem: ProgressItem = createNewProgressItem();
         setItems((prevItems) => [...prevItems, newItem]);
       }
     } else if (event.key === "ArrowUp") {
@@ -71,7 +66,7 @@ export const DailyProgress: React.FC = () => {
       if (index > 0) {
         focusItem(index - 1);
       } else if (items.length === 1 && index === 0) {
-        setItems([initEmptyProgressItem()]);
+        setItems([createNewProgressItem()]);
       }
     }
   };
