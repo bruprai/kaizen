@@ -1,19 +1,19 @@
-import { getDateKey, getDisplayDate } from "./utils";
+import { getDateKey, getDisplayDate } from "./utils/dateUtils";
 
-export interface ProgressItem {
+export interface ProgressItemModel {
   id: string;
   text: string;
   completed?: boolean;
 }
-export interface DailyProgress {
+export interface DailyProgressModel {
   dateKey: string;
   displayDate: string;
-  items: ProgressItem[];
+  items: ProgressItemModel[];
 }
-export function createNewProgressItem(): ProgressItem {
+export function createNewProgressItem(): ProgressItemModel {
   return { id: `${Date.now()}`, text: "" };
 }
-export function createNewDailyProgressEntry(): DailyProgress {
+export function createNewDailyProgressEntry(): DailyProgressModel {
   return {
     dateKey: getDateKey(),
     displayDate: getDisplayDate(),

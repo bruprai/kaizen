@@ -1,9 +1,27 @@
-import { useEffect, useRef, useState } from "react";
-import { createNewProgressItem, type ProgressItem } from "./types";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  createNewProgressItem,
+  type DailyProgressModel,
+  type ProgressItemModel,
+} from "./types";
 
-export const DailyProgress: React.FC = () => {
-  const [items, setItems] = useState<ProgressItem[]>([createNewProgressItem()]);
+interface DailyProgressProps {
+  progressDay: DailyProgressModel;
+  onUpdateProgress: (updatedDay: DailyProgressModel) => void;
+  isEditable: boolean;
+}
+export const DailyProgress: React.FC<DailyProgressProps> = ({
+  progressDay,
+  onUpdateProgress,
+  isEditable,
+}) => {
+  const [items, setItems] = useState<ProgressItemModel[]>(progressDay.items);
   const itemRefs = useRef<Map<string, HTMLInputElement | null>>(new Map());
+  const saveDebounceRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setItems(progressDay.items);
+  }, [progressDay.items]);
 
   useEffect(() => {
     if (items.length > 0) {
@@ -15,6 +33,15 @@ export const DailyProgress: React.FC = () => {
       }
     }
   }, [items]);
+
+  const triggerSave = useCallback(() => {
+    if (saveDebounceRef.current) {
+      clearTimeout(saveDebounceRef.current);
+    }
+    saveDebounceRef.current = setTimeout(() => {
+      onUpdateProgress({ ...progressDay, items: items });
+    }, 500);
+  }, [items, onUpdateProgress, progressDay]);
 
   const focusItem = (targetIndex: number): void => {
     if (targetIndex >= 0 && targetIndex < items.length) {
@@ -31,18 +58,30 @@ export const DailyProgress: React.FC = () => {
         prevItem.id === id ? { ...prevItem, text: value } : prevItem
       )
     );
-    console.log("items after setting", items);
   };
+
+  useEffect(() => {
+    if (isEditable) {
+      triggerSave();
+    }
+    return () => {
+      if (saveDebounceRef.current) {
+        clearTimeout(saveDebounceRef.current);
+      }
+    };
+  }, [items, isEditable, triggerSave]);
+
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLInputElement>,
     index: number
   ) => {
+    if (!isEditable) return;
     if (event.key === "Enter") {
       event.preventDefault();
       const currentItem = items[index];
       console.log("currentItem", currentItem);
       if (currentItem.text.trim() !== "" || index === items.length - 1) {
-        const newItem: ProgressItem = createNewProgressItem();
+        const newItem: ProgressItemModel = createNewProgressItem();
         setItems((prevItems) => [...prevItems, newItem]);
       }
     } else if (event.key === "ArrowUp") {
@@ -87,8 +126,12 @@ export const DailyProgress: React.FC = () => {
             onKeyDown={(e) => handleKeyDown(e, index)}
             placeholder="Write you content"
             className="progress-input"
+            readOnly={!isEditable}
           ></input>
         ))}
+        {!isEditable && items.every((item) => item.text.trim() === "") && (
+          <p className="no-entry-message">No enteries for this day</p>
+        )}
       </div>
     </section>
   );
