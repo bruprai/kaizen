@@ -4,7 +4,6 @@ import {
   type DailyProgressModel,
   type ProgressItemModel,
 } from "./types";
-
 interface DailyProgressProps {
   progressDay: DailyProgressModel;
   onUpdateProgress: (updatedDay: DailyProgressModel) => void;
@@ -20,6 +19,7 @@ export const DailyProgress: React.FC<DailyProgressProps> = ({
   const saveDebounceRef = useRef<number | null>(null);
 
   useEffect(() => {
+    console.log("setitems in daily progress component");
     setItems(progressDay.items);
   }, [progressDay.items]);
 
@@ -34,14 +34,16 @@ export const DailyProgress: React.FC<DailyProgressProps> = ({
     }
   }, [items]);
 
-  const triggerSave = useCallback(() => {
+  const triggerSave = (currentItems: ProgressItemModel[]) => {
+    console.log("trigger save");
     if (saveDebounceRef.current) {
       clearTimeout(saveDebounceRef.current);
     }
     saveDebounceRef.current = setTimeout(() => {
-      onUpdateProgress({ ...progressDay, items: items });
+      console.log("update progress parent function calling");
+      onUpdateProgress({ ...progressDay, items: currentItems });
     }, 500);
-  }, [items, onUpdateProgress, progressDay]);
+  };
 
   const focusItem = (targetIndex: number): void => {
     if (targetIndex >= 0 && targetIndex < items.length) {
@@ -53,23 +55,25 @@ export const DailyProgress: React.FC<DailyProgressProps> = ({
     }
   };
   const handleChange = (id: string, value: string) => {
-    setItems((prevItems) =>
-      prevItems.map((prevItem) =>
+    setItems((prevItems) => {
+      const nextItems = prevItems.map((prevItem) =>
         prevItem.id === id ? { ...prevItem, text: value } : prevItem
-      )
-    );
+      );
+      if (isEditable) {
+        console.log("is editable triggerring save");
+        triggerSave(nextItems);
+      }
+      return nextItems;
+    });
   };
-
+  // This effect handles ONLY the unmount cleanup
   useEffect(() => {
-    if (isEditable) {
-      triggerSave();
-    }
     return () => {
       if (saveDebounceRef.current) {
         clearTimeout(saveDebounceRef.current);
       }
     };
-  }, [items, isEditable, triggerSave]);
+  }, []); // Empty array = runs only on mount/unmount
 
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLInputElement>,
@@ -129,6 +133,7 @@ export const DailyProgress: React.FC<DailyProgressProps> = ({
             readOnly={!isEditable}
           ></input>
         ))}
+
         {!isEditable && items.every((item) => item.text.trim() === "") && (
           <p className="no-entry-message">No enteries for this day</p>
         )}
