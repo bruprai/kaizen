@@ -1,115 +1,52 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  createNewProgressItem,
-  type DailyProgressModel,
-  type ProgressItemModel,
-} from "./types";
-interface DailyProgressProps {
-  progressDay: DailyProgressModel;
-  onUpdateProgress: (updatedDay: DailyProgressModel) => void;
-  isEditable: boolean;
+  TASK_STATUSES,
+  type onUpdateTaskParams,
+  type TaskModel,
+} from "./models/types";
+
+interface props {
+  dateKey: string;
+  tasks: TaskModel[];
+  onAdd: (text: string) => void;
+  onDelete: (taskId: string) => void;
+  onUpdate: (params: onUpdateTaskParams) => void;
+  isToday: boolean;
 }
-export const DailyProgress: React.FC<DailyProgressProps> = ({
-  progressDay,
-  onUpdateProgress,
-  isEditable,
+
+export const DailyProgress: React.FC<props> = ({
+  dateKey,
+  tasks,
+  onAdd,
+  onUpdate,
+  onDelete,
+  isToday,
 }) => {
-  const [items, setItems] = useState<ProgressItemModel[]>(progressDay.items);
-  const itemRefs = useRef<Map<string, HTMLInputElement | null>>(new Map());
-  const saveDebounceRef = useRef<number | null>(null);
+  const [input, setInput] = useState<string>("");
 
-  useEffect(() => {
-    console.log("setitems in daily progress component");
-    setItems(progressDay.items);
-  }, [progressDay.items]);
-
-  useEffect(() => {
-    if (items.length > 0) {
-      const lastInputId = items[items.length - 1].id;
-      const lastInput = itemRefs.current.get(lastInputId);
-
-      if (lastInput) {
-        lastInput.focus();
-      }
-    }
-  }, [items]);
-
-  const triggerSave = (currentItems: ProgressItemModel[]) => {
-    console.log("trigger save");
-    if (saveDebounceRef.current) {
-      clearTimeout(saveDebounceRef.current);
-    }
-    saveDebounceRef.current = setTimeout(() => {
-      console.log("update progress parent function calling");
-      onUpdateProgress({ ...progressDay, items: currentItems });
-    }, 500);
-  };
+  const taskRefs = useRef<Map<string, HTMLInputElement | null>>(new Map());
 
   const focusItem = (targetIndex: number): void => {
-    if (targetIndex >= 0 && targetIndex < items.length) {
-      const targetItemId = items[targetIndex].id;
-      const targetInput = itemRefs.current.get(targetItemId);
+    if (targetIndex >= 0 && targetIndex < tasks.length) {
+      const targetItemId = tasks[targetIndex].id;
+      const targetInput = taskRefs.current.get(targetItemId);
       if (targetInput) {
         targetInput.focus();
       }
     }
   };
-  const handleChange = (id: string, value: string) => {
-    setItems((prevItems) => {
-      const nextItems = prevItems.map((prevItem) =>
-        prevItem.id === id ? { ...prevItem, text: value } : prevItem
-      );
-      if (isEditable) {
-        console.log("is editable triggerring save");
-        triggerSave(nextItems);
-      }
-      return nextItems;
-    });
-  };
-  // This effect handles ONLY the unmount cleanup
-  useEffect(() => {
-    return () => {
-      if (saveDebounceRef.current) {
-        clearTimeout(saveDebounceRef.current);
-      }
-    };
-  }, []); // Empty array = runs only on mount/unmount
 
-  const handleKeyDown = (
-    event: React.KeyboardEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    if (!isEditable) return;
-    if (event.key === "Enter") {
-      event.preventDefault();
-      const currentItem = items[index];
-      console.log("currentItem", currentItem);
-      if (currentItem.text.trim() !== "" || index === items.length - 1) {
-        const newItem: ProgressItemModel = createNewProgressItem();
-        setItems((prevItems) => [...prevItems, newItem]);
-      }
-    } else if (event.key === "ArrowUp") {
-      console.log("prev item");
-      focusItem(index - 1);
-    } else if (event.key === "ArrowDown") {
-      console.log("next item");
-      focusItem(index + 1);
-    } else if (
-      event.key === "Backspace" &&
-      items[index].text === "" &&
-      items.length > 1
-    ) {
-      event.preventDefault();
-      setItems((prevItems) =>
-        prevItems.filter((_, i) => {
-          console.log("i", i);
-          return i !== index;
-        })
-      );
-      if (index > 0) {
-        focusItem(index - 1);
-      } else if (items.length === 1 && index === 0) {
-        setItems([createNewProgressItem()]);
+  const handleKeyDown = (e: React.KeyboardEvent, task?: TaskModel) => {
+    if (e.key === "Enter" && input.trim() && !task) {
+      console.log("adding task on enter", input);
+      onAdd(input);
+      setInput("");
+    } else {
+      if (e.altKey && e.key === "Delete" && task) {
+        onUpdate({
+          taskId: task.id,
+          updates: { status: TASK_STATUSES.DONE },
+        });
       }
     }
   };
@@ -118,24 +55,46 @@ export const DailyProgress: React.FC<DailyProgressProps> = ({
       <h1>Daily Progress</h1>
       <p>Track your daily activities and progress.</p>
       <div className="progress-list">
-        {items.map((item, index) => (
-          <input
-            key={item.id}
-            type="text"
-            ref={(element) => {
-              itemRefs.current.set(item.id, element);
-            }}
-            value={item.text}
-            onChange={(e) => handleChange(item.id, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(e, index)}
-            placeholder="Write you content"
-            className="progress-input"
-            readOnly={!isEditable}
-          ></input>
+        {tasks.map((task) => (
+          <div key={task.id} className="task-item">
+            <input
+              key={task.id}
+              type="text"
+              value={task.content}
+              onKeyDown={(e) => handleKeyDown(e, task)}
+              onChange={(e) =>
+                onUpdate({
+                  taskId: task.id,
+                  updates: { content: e.target.value },
+                })
+              }
+              className="progress-input"
+              readOnly={!isToday}
+              style={{
+                textDecoration:
+                  task.status === TASK_STATUSES.DONE ? "line-through" : "none",
+                opacity: task.status === TASK_STATUSES.DONE ? 0.6 : 1,
+              }}
+            />
+            <span className="tags-preview">
+              <div>{task.tags.map((t) => `#${t}`)}</div>
+            </span>
+          </div>
         ))}
 
-        {!isEditable && items.every((item) => item.text.trim() === "") && (
+        {!isToday && tasks.every((task) => task.content.trim() === "") && (
           <p className="no-entry-message">No enteries for this day</p>
+        )}
+        {isToday && (
+          <div className="input-row">
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e)}
+              placeholder="Add new task (try using #tags)..."
+              className="progress-input new-task-input"
+            />
+          </div>
         )}
       </div>
     </section>

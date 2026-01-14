@@ -98,10 +98,13 @@
   outline: none;
   transition: border-color 0.3s ease-in-out;
 }
+
 .progress-input:focus {
   border-bottom-color: #007bff;
 }
-
+.tags-preview div {
+  color: green;
+}
 .nav-curtain {
   position: fixed;
   top: 10%;
