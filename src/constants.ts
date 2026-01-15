@@ -2,7 +2,7 @@
 
 export const STORAGE_KEYS = {
   lastActive: "kaizen_last_active_date",
-  date: "kaizen-db_v1",
+  data: "kaizen-db_v1",
 } as const; // converts the object from "a general object with strings" to "a specific, read-only shape
 
 export const REGEX = {

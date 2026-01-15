@@ -4,7 +4,7 @@ import {
   type TaskModel,
   type TaskStore,
 } from "../models/types";
-import { getTimestamp } from "../utils/dateUtils";
+import { getDateKey, getTimestamp } from "../utils/dateUtils";
 import { STORAGE_KEYS, REGEX, TASK_STATUSES } from "../constants";
 import {
   migrateTasks,
@@ -13,9 +13,10 @@ import {
 } from "../utils/taskUtils";
 
 export const useTaskStore = () => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getDateKey();
+
   const [store, setStore] = useState<TaskStore>(() => {
-    const savedData = localStorage.getItem(STORAGE_KEYS.date);
+    const savedData = localStorage.getItem(STORAGE_KEYS.data);
     const lastActive = localStorage.getItem(STORAGE_KEYS.lastActive);
     console.log("new Date().toISOString()", new Date().toISOString());
 
@@ -36,7 +37,7 @@ export const useTaskStore = () => {
   });
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.date, JSON.stringify(store));
+    localStorage.setItem(STORAGE_KEYS.data, JSON.stringify(store));
     localStorage.setItem(STORAGE_KEYS.lastActive, today);
   }, [store]);
 
