@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  TASK_STATUSES,
-  type onUpdateTaskParams,
-  type TaskModel,
-} from "./models/types";
+import { type onUpdateTaskParams, type TaskModel } from "./models/types";
+import { processContent } from "./utils/taskUtils";
+import { TASK_STATUSES } from "./constants";
 
 interface props {
   dateKey: string;
@@ -37,31 +35,45 @@ export const DailyProgress: React.FC<props> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, task?: TaskModel) => {
-    if (e.key === "Enter" && input.trim() && !task) {
-      console.log("adding task on enter", input);
-      onAdd(input);
-      setInput("");
-    } else {
-      if (e.altKey && e.key === "Delete" && task) {
-        onUpdate({
-          taskId: task.id,
-          updates: { status: TASK_STATUSES.DONE },
-        });
+    if (e.key === "Enter") {
+      if (task) {
+        const { tags, cleanContent } = processContent(task.content);
+        onUpdate({ taskId: task.id, updates: { tags, content: cleanContent } });
+
+        (e.target as HTMLInputElement).blur();
+      } else if (input.trim()) {
+        onAdd(input);
+        setInput("");
       }
     }
+    if (e.altKey && e.key === "Delete" && task) {
+      onUpdate({
+        taskId: task.id,
+        updates: { status: TASK_STATUSES.DONE },
+      });
+    }
   };
+
   return (
     <section className="daily-progress">
       <h1>Daily Progress</h1>
       <p>Track your daily activities and progress.</p>
       <div className="progress-list">
         {tasks.map((task) => (
-          <div key={task.id} className="task-item">
+          <div key={task.id} className="task-input-wrapper">
             <input
               key={task.id}
               type="text"
               value={task.content}
               onKeyDown={(e) => handleKeyDown(e, task)}
+              onBlur={(e) => {
+                console.log("on blur cleaing content of tags");
+                const { tags, cleanContent } = processContent(e.target.value);
+                onUpdate({
+                  taskId: task.id,
+                  updates: { content: cleanContent, tags },
+                });
+              }}
               onChange={(e) =>
                 onUpdate({
                   taskId: task.id,
@@ -76,9 +88,11 @@ export const DailyProgress: React.FC<props> = ({
                 opacity: task.status === TASK_STATUSES.DONE ? 0.6 : 1,
               }}
             />
-            <span className="tags-preview">
-              <div>{task.tags.map((t) => `#${t}`)}</div>
-            </span>
+            <div className="tags-overlay">
+              {task.tags.map((tag) => (
+                <span className="tag-pill">#{tag}</span>
+              ))}
+            </div>
           </div>
         ))}
 

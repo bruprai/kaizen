@@ -1,3 +1,5 @@
+import type { TASK_STATUSES } from "../constants";
+
 export interface TaskModel {
   id: string;
   content: string;
@@ -18,14 +20,6 @@ export interface TaskStore {
   daysIndex: Record<string, string[]>;
   tagsIndex: Record<string, string[]>;
 }
-
-export const TASK_STATUSES = {
-  TODO: "todo",
-  MIGRATED: "migrated",
-  DONE: "done",
-  SCHEDULED: "scheduled",
-  DISCARDED: "discarded",
-} as const;
 
 export type TaskStatus = (typeof TASK_STATUSES)[keyof typeof TASK_STATUSES];
 

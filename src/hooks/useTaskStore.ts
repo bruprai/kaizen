@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
 import {
-  TASK_STATUSES,
   type onUpdateTaskParams,
   type TaskModel,
   type TaskStore,
 } from "../models/types";
 import { getTimestamp } from "../utils/dateUtils";
-
-const LOCAL_LAST_ACTIVE_DATE_KEY = "kaizen_last_active_date";
-const LOCAL_DB_KEY = "kaizen-db_v1";
-const TAG_REGEX = /#(\w+)/g;
+import { STORAGE_KEYS, REGEX, TASK_STATUSES } from "../constants";
+import {
+  migrateTasks,
+  processContent,
+  rebuildIndexes,
+} from "../utils/taskUtils";
 
 export const useTaskStore = () => {
+  const today = new Date().toISOString().split("T")[0];
   const [store, setStore] = useState<TaskStore>(() => {
-    const savedData = localStorage.getItem(LOCAL_DB_KEY);
-    const lastActive = localStorage.getItem(LOCAL_LAST_ACTIVE_DATE_KEY);
+    const savedData = localStorage.getItem(STORAGE_KEYS.date);
+    const lastActive = localStorage.getItem(STORAGE_KEYS.lastActive);
     console.log("new Date().toISOString()", new Date().toISOString());
-    const today = new Date().toISOString().split("T")[0];
+
     console.log("saved data", savedData);
     if (savedData) {
       let currentStore: TaskStore = JSON.parse(savedData);
@@ -24,7 +26,6 @@ export const useTaskStore = () => {
         currentStore = migrateTasks(currentStore, today);
       }
       console.log("Current Store:", currentStore);
-      localStorage.setItem(LOCAL_LAST_ACTIVE_DATE_KEY, today);
       return currentStore;
     }
     return {
@@ -35,61 +36,18 @@ export const useTaskStore = () => {
   });
 
   useEffect(() => {
-    localStorage.setItem(LOCAL_DB_KEY, JSON.stringify(store));
+    localStorage.setItem(STORAGE_KEYS.date, JSON.stringify(store));
+    localStorage.setItem(STORAGE_KEYS.lastActive, today);
   }, [store]);
 
-  const migrateTasks = (oldStore: TaskStore, today: string): TaskStore => {
-    const updatedTasks = { ...oldStore.tasks };
-
-    Object.values(updatedTasks).forEach((task) => {
-      if (task.status === TASK_STATUSES.TODO && task.currentDateKey < today) {
-        if (task.history) task.history = [];
-        task.history.push(task.currentDateKey);
-        task.currentDateKey = today;
-      }
-
-      if (task.tags.includes("plan for tomorrow")) {
-        task.currentDateKey = today;
-        task.status = TASK_STATUSES.TODO;
-        task.tags = task.tags.filter((tag) => tag !== "plan for tomorrow");
-      }
-    });
-    return rebuildIndexes(updatedTasks);
-  };
-
-  const rebuildIndexes = (tasks: Record<string, TaskModel>): TaskStore => {
-    const daysIndex: Record<string, string[]> = {};
-    const tagsIndex: Record<string, string[]> = {};
-    console.log("Rebuilding indexes...");
-    Object.values(tasks).forEach((task) => {
-      if (!daysIndex[task.currentDateKey]) {
-        daysIndex[task.currentDateKey] = [];
-        console.log("day index value empty for that day: ", daysIndex);
-      }
-      daysIndex[task.currentDateKey].push(task.id);
-      console.log("day index updated for: ", daysIndex);
-      task.tags.forEach((tag) => {
-        if (!tagsIndex[tag]) {
-          tagsIndex[tag] = [];
-          console.log("tag index value empty for this tag: ", tagsIndex);
-        }
-        tagsIndex[tag].push(task.id);
-        console.log("tag index updated for: ", tagsIndex);
-      });
-    });
-    return { tasks, daysIndex, tagsIndex };
-  };
-
   const addTask = (content: string, dateKey: string) => {
-    const taskId = crypto.randomUUID();
+    const { tags, cleanContent } = processContent(content);
 
-    const tags = [...content.matchAll(TAG_REGEX)].map((match) =>
-      match[1].toLowerCase()
-    );
+    const taskId = crypto.randomUUID();
 
     const newTask: TaskModel = {
       id: taskId,
-      content,
+      content: cleanContent,
       status: TASK_STATUSES.TODO,
       createdAt: getTimestamp(),
       originDateKey: dateKey,
@@ -116,7 +74,7 @@ export const useTaskStore = () => {
       };
       if (params.updates?.content !== undefined) {
         updatedTask.tags = [
-          ...params.updates!.content!.matchAll(TAG_REGEX),
+          ...params.updates!.content!.matchAll(REGEX.tags),
         ].map((match) => match[1].toLowerCase());
       }
       const updatedTasks = {
