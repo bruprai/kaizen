@@ -18,6 +18,11 @@ export const TASK_STATUSES = {
   DISCARDED: "discarded",
 } as const;
 
+export const DIRECTION = {
+  outdent: "outdent",
+  indent: "indent",
+} as const;
+
 export const APP_CONFIG = {
   NAME: "Kaizen",
   VERSION: "0.1.2",

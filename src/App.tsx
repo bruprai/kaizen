@@ -3,6 +3,7 @@ import { getDateKey, getFormatedDate } from "./utils/dateUtils.ts";
 import { DailyProgress } from "./DailyProgress.tsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTaskStore } from "./hooks/useTaskStore.ts";
+import { sortTasksByHierarchy } from "./utils/taskUtils.ts";
 
 function App() {
   const { store, addTask, deleteTask, updateTask, getTasksByDateKey } =
@@ -31,6 +32,8 @@ function App() {
     nextDate.setDate(nextDate.getDate() + offset);
     setViewingDate(nextDate);
   };
+  const tasksForToday = getTasksByDateKey(dateKey);
+  const sortedTasks = sortTasksByHierarchy(tasksForToday);
 
   return (
     <div className="app-container">
@@ -55,8 +58,8 @@ function App() {
         <DailyProgress
           key={dateKey}
           dateKey={dateKey}
-          tasks={getTasksByDateKey(dateKey)}
-          onAdd={(text) => addTask(text, dateKey)}
+          tasks={sortedTasks}
+          onAdd={(text, parentId) => addTask(text, dateKey, parentId)}
           onUpdate={updateTask}
           onDelete={deleteTask}
           isToday={isToday}

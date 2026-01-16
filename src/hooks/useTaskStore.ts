@@ -41,7 +41,11 @@ export const useTaskStore = () => {
     localStorage.setItem(STORAGE_KEYS.lastActive, today);
   }, [store]);
 
-  const addTask = (content: string, dateKey: string) => {
+  const addTask = (
+    content: string,
+    dateKey: string,
+    parentId?: string
+  ): string => {
     const { tags, cleanContent } = processContent(content);
 
     const taskId = crypto.randomUUID();
@@ -53,7 +57,7 @@ export const useTaskStore = () => {
       createdAt: getTimestamp(),
       originDateKey: dateKey,
       currentDateKey: dateKey,
-      parentId: "",
+      parentId: parentId || "",
       tags,
       history: [],
     };
@@ -62,6 +66,7 @@ export const useTaskStore = () => {
       const updatedTasks = { ...prev.tasks, [taskId]: newTask };
       return rebuildIndexes(updatedTasks);
     });
+    return newTask.id;
   };
 
   const updateTask = (params: onUpdateTaskParams) => {
@@ -73,11 +78,7 @@ export const useTaskStore = () => {
         ...params.updates,
         updatedAt: getTimestamp(),
       };
-      if (params.updates?.content !== undefined) {
-        updatedTask.tags = [
-          ...params.updates!.content!.matchAll(REGEX.tags),
-        ].map((match) => match[1].toLowerCase());
-      }
+
       const updatedTasks = {
         ...prev.tasks,
         [params.taskId!]: updatedTask,
@@ -85,6 +86,7 @@ export const useTaskStore = () => {
       return rebuildIndexes(updatedTasks);
     });
   };
+
   const deleteTask = (taskId: string) => {
     setStore((prev) => {
       const updatedTasks = { ...prev.tasks };

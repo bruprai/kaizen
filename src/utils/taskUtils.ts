@@ -1,4 +1,4 @@
-import { REGEX, TASK_STATUSES } from "../constants";
+import { DIRECTION, REGEX, TASK_STATUSES } from "../constants";
 import type { TaskModel, TaskStore } from "../models/types";
 
 /// returns tags and content without tags
@@ -51,4 +51,36 @@ export const rebuildIndexes = (tasks: Record<string, TaskModel>): TaskStore => {
     });
   });
   return { tasks, daysIndex, tagsIndex };
+};
+
+export const getParentId = (
+  taskId: string | undefined,
+  direction: "indent" | "outdent",
+  tasksInView: TaskModel[]
+): string | null => {
+  console.log("Direction", direction);
+  if (direction === DIRECTION.outdent) return null;
+  if (!taskId)
+    return tasksInView.length > 0
+      ? tasksInView[tasksInView.length - 1].id
+      : null;
+  const currentIndex = tasksInView.findIndex((task) => task.id === taskId);
+  if (currentIndex > 0) {
+    console.log("returning parent id ", tasksInView[currentIndex - 1].id);
+    return tasksInView[currentIndex - 1].id;
+  }
+  return null;
+};
+
+export const sortTasksByHierarchy = (tasks: TaskModel[]): TaskModel[] => {
+  const parents = tasks.filter((task) => !task.parentId);
+  const children = tasks.filter((task) => task.parentId);
+  const result: TaskModel[] = [];
+  parents.forEach((parent) => {
+    result.push(parent);
+    const subtasks = children.filter((child) => child.parentId === parent.id);
+    result.push(...subtasks);
+  });
+  console.log("sortTasksByHierarchy Result", result);
+  return result;
 };
