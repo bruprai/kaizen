@@ -132,6 +132,18 @@
   gap: 5px;
   pointer-events: none;
 }
+.delete-icon {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+  border: none;
+}
+.delete-icon:hover {
+  opacity: 1;
+}
+
 .tags-overlay .tag-pill {
   background: rgba(255, 255, 255, 0.1);
   padding: 2px 6px;

@@ -5,7 +5,7 @@ import {
   type TaskStore,
 } from "../models/types";
 import { getDateKey, getTimestamp } from "../utils/dateUtils";
-import { STORAGE_KEYS, REGEX, TASK_STATUSES } from "../constants";
+import { STORAGE_KEYS, TASK_STATUSES } from "../constants";
 import {
   migrateTasks,
   processContent,
@@ -70,15 +70,21 @@ export const useTaskStore = () => {
   };
 
   const updateTask = (params: onUpdateTaskParams) => {
+    console.log("useStore: update task", params);
     setStore((prev) => {
       const oldTask = prev.tasks[params.taskId!];
+      console.log("useStore: update task", oldTask);
       if (!oldTask) return prev;
       const updatedTask = {
         ...oldTask,
         ...params.updates,
+        tags: params.updates?.tags
+          ? Array.from(new Set([...oldTask.tags, ...params.updates?.tags]))
+          : oldTask.tags,
+
         updatedAt: getTimestamp(),
       };
-
+      console.log("udpated taks", updatedTask);
       const updatedTasks = {
         ...prev.tasks,
         [params.taskId!]: updatedTask,

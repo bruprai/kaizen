@@ -15,6 +15,7 @@ interface props {
 export const DailyProgress: React.FC<props> = ({
   tasks,
   onAdd,
+  onDelete,
   onUpdate,
   isToday,
 }) => {
@@ -74,13 +75,37 @@ export const DailyProgress: React.FC<props> = ({
         updates: { status: TASK_STATUSES.DONE },
       });
     }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (currentIndex === tasks.length - 1 || currentIndex === -1) {
+        // If on last task or new task input, focus the new task input (or wrap to top)
+        const newInnerInput = document.querySelector(
+          ".task-input"
+        ) as HTMLInputElement;
+        newInnerInput?.focus();
+      } else {
+        focusItem(currentIndex + 1);
+      }
+    }
+
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (currentIndex === -1) {
+        // If we are in the "New Task" input (currentIndex -1), go to the last task
+        focusItem(tasks.length - 1);
+      } else if (currentIndex > 0) {
+        focusItem(currentIndex - 1);
+      }
+    }
   };
 
-  const updateTask = (id: string, value: string) => {
+  const updateTask = (task: TaskModel, value: string) => {
+    console.log("updateTask");
     const { tags, cleanContent } = processContent(value);
-    console.log("tags,clean data", tags, cleanContent);
+    console.log("tags,clean data, value", tags, cleanContent, task.content);
+
     onUpdate({
-      taskId: id,
+      taskId: task.id,
       updates: { content: cleanContent, tags: tags },
     });
   };
@@ -99,16 +124,18 @@ export const DailyProgress: React.FC<props> = ({
           >
             <input
               key={task.id}
+              ref={(element) => {
+                taskRefs.current.set(task.id, element);
+              }}
               type="text"
               value={task.content}
               onKeyDown={(e) => handleKeyDown(e, task)}
-              onBlur={(e) => {
-                console.log("on blur content");
-                updateTask(task.id, e.target.value);
-              }}
+              // onBlur={(e) => {
+              //   console.log("on blur content");
+              //   updateTask(task.id, e.target.value);
+              // }}
               onChange={(e) => {
-                console.log("on CHANGE content ");
-                updateTask(task.id, e.target.value);
+                updateTask(task, e.target.value);
               }}
               className="task-input"
               readOnly={!isToday}
@@ -124,6 +151,9 @@ export const DailyProgress: React.FC<props> = ({
                   #{tag}
                 </span>
               ))}
+            </div>
+            <div className="delete-icon">
+              <button onClick={() => onDelete(task.id)}>Delete</button>
             </div>
           </div>
         ))}

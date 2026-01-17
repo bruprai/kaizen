@@ -3,11 +3,12 @@ import type { TaskModel, TaskStore } from "../models/types";
 
 /// returns tags and content without tags
 export const processContent = (text: string) => {
+  console.log("processContent text", text);
   const tags = [...text.matchAll(REGEX.tags)].map((m) => m[1].toLowerCase());
-  const cleanContent = text
-    .replace(REGEX.tags, "")
-    .replace(REGEX.whitespace, " ")
-    .trim();
+  const cleanContent = text.replace(REGEX.tags, "");
+  // .replace(REGEX.whitespace, " ")
+  // .trim()
+  console.log("clean content", cleanContent);
   return { tags, cleanContent };
 };
 
@@ -37,17 +38,13 @@ export const rebuildIndexes = (tasks: Record<string, TaskModel>): TaskStore => {
   Object.values(tasks).forEach((task) => {
     if (!daysIndex[task.currentDateKey]) {
       daysIndex[task.currentDateKey] = [];
-      console.log("day index value empty for that day: ", daysIndex);
     }
     daysIndex[task.currentDateKey].push(task.id);
-    console.log("day index updated for: ", daysIndex);
     task.tags.forEach((tag) => {
       if (!tagsIndex[tag]) {
         tagsIndex[tag] = [];
-        console.log("tag index value empty for this tag: ", tagsIndex);
       }
       tagsIndex[tag].push(task.id);
-      console.log("tag index updated for: ", tagsIndex);
     });
   });
   return { tasks, daysIndex, tagsIndex };
