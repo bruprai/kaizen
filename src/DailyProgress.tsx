@@ -54,9 +54,7 @@ export const DailyProgress: React.FC<props> = ({
     }
     if (e.key === "Enter") {
       if (task) {
-        const { tags, cleanContent } = processContent(task.content);
-        onUpdate({ taskId: task.id, updates: { tags, content: cleanContent } });
-
+        handleChange(task.id, task.content, { isFinal: true });
         (e.target as HTMLInputElement).blur();
       } else if (input.trim()) {
         console.log("new task");
@@ -99,14 +97,13 @@ export const DailyProgress: React.FC<props> = ({
     }
   };
 
-  const updateTask = (task: TaskModel, value: string) => {
+  const handleChange = (taskId: string, value: string, { isFinal = false }) => {
     console.log("updateTask");
-    const { tags, cleanContent } = processContent(value);
-    console.log("tags,clean data, value", tags, cleanContent, task.content);
+    const { tags, cleanContent } = processContent(value, isFinal);
 
     onUpdate({
-      taskId: task.id,
-      updates: { content: cleanContent, tags: tags },
+      taskId: taskId,
+      updates: { content: cleanContent, tags },
     });
   };
 
@@ -130,12 +127,12 @@ export const DailyProgress: React.FC<props> = ({
               type="text"
               value={task.content}
               onKeyDown={(e) => handleKeyDown(e, task)}
-              // onBlur={(e) => {
-              //   console.log("on blur content");
-              //   updateTask(task.id, e.target.value);
-              // }}
+              onBlur={(e) => {
+                console.log("on blur content");
+                handleChange(task.id, e.target.value, { isFinal: true });
+              }}
               onChange={(e) => {
-                updateTask(task, e.target.value);
+                handleChange(task.id, e.target.value, { isFinal: false });
               }}
               className="task-input"
               readOnly={!isToday}

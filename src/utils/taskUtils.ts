@@ -2,12 +2,15 @@ import { DIRECTION, REGEX, TASK_STATUSES } from "../constants";
 import type { TaskModel, TaskStore } from "../models/types";
 
 /// returns tags and content without tags
-export const processContent = (text: string) => {
+export const processContent = (text: string, isFinal?: boolean) => {
   console.log("processContent text", text);
-  const tags = [...text.matchAll(REGEX.tags)].map((m) => m[1].toLowerCase());
-  const cleanContent = text.replace(REGEX.tags, "");
-  // .replace(REGEX.whitespace, " ")
-  // .trim()
+  const regex = isFinal ? REGEX.tagsInString : REGEX.tagsFollowedBySpace;
+  const tags = [...text.matchAll(regex)].map((m) => m[1].toLowerCase());
+  let cleanContent = text.replace(regex, "");
+
+  if (isFinal) {
+    cleanContent = cleanContent.trim();
+  }
   console.log("clean content", cleanContent);
   return { tags, cleanContent };
 };
