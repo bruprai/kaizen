@@ -87,7 +87,9 @@
   align-items: center;
   margin-bottom: 1rem;
   margin-left: 0;
-  transition: margin-left 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: margin-left 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease,
+    transform 0.3s ease;
+  opacity: 0.8;
 }
 .task-input-wrapper.is-subtask {
   margin-left: 2rem;
@@ -102,6 +104,9 @@
   bottom: 0;
   width: 2px;
   background: rgba(255, 255, 255, 0.05);
+}
+.text-input-wrapper:hover .delete-icon {
+  opacity: 0.5;
 }
 .task-list {
   display: flex;
@@ -119,11 +124,18 @@
   padding-right: 100px;
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.3s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
 }
 
 .task-input:focus {
-  border-bottom-color: #007bff;
+  background-color: #fff;
+  border-color: #007bff;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+.task-input-wrapper:focus-within {
+  opacity: 1;
+  transform: translateX(4px);
 }
 .tags-overlay {
   position: absolute;
@@ -131,17 +143,50 @@
   display: flex;
   gap: 5px;
   pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+.task-input-wrapper:hover .tags-overlay {
+  transform: translateX(-30px);
+}
+
+.task-input-wrapper:has(.delete-icon:hover) .task-input {
+  opacity: 0.3 !important;
+  filter: grayscale(1);
+  text-decoration: line-through !important;
+}
+.task-input-wrapper:has(.delete-icon:hover) .tag-pill {
+  opacity: 0.3 !important;
+  filter: grayscale(1);
+}
+
 .delete-icon {
   position: absolute;
-  right: 10px;
-  display: flex;
+  right: 8px;
+  top: 8px;
+  background: none !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  padding: 8px;
   opacity: 0;
-  transition: opacity 0.3s ease-in;
-  border: none;
+  transition: all 0.2s ease-in-out;
+  z-index: 2;
+}
+.delete-btn:focus,
+.delete-btn:active {
+  outline: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+.task-input-wrapper:hover .delete-icon {
+  opacity: 0.4;
 }
 .delete-icon:hover {
-  opacity: 1;
+  opacity: 1 !important;
+  transform: scale(1.1);
 }
 
 .tags-overlay .tag-pill {
