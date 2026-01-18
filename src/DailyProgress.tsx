@@ -67,11 +67,26 @@ export const DailyProgress: React.FC<props> = ({
         setIsNextSubtask(false);
       }
     }
-    if (e.altKey && e.key === "Delete" && task) {
+    if (e.altKey && e.key.toLowerCase() === "d" && task) {
+      e.preventDefault();
       onUpdate({
         taskId: task.id,
         updates: { status: TASK_STATUSES.DONE },
       });
+      if (task.parentId === "") {
+        const childrens = tasks.filter(
+          (subtask) => subtask.parentId === task.id
+        );
+        console.log("childrens", childrens);
+        if (childrens.length > 0) {
+          childrens.forEach((child) => {
+            onUpdate({
+              taskId: child.id,
+              updates: { status: TASK_STATUSES.DONE },
+            });
+          });
+        }
+      }
     }
     if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -148,6 +163,14 @@ export const DailyProgress: React.FC<props> = ({
                   #{tag}
                 </span>
               ))}
+              {task.history && task.history.length > 0 && (
+                <span
+                  className="task-age"
+                  title={`Migrated ${task.history.length} times`}
+                >
+                  {task.history.length}d
+                </span>
+              )}
             </div>
             <div>
               <button className="delete-icon" onClick={() => onDelete(task.id)}>
@@ -182,7 +205,7 @@ export const DailyProgress: React.FC<props> = ({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e)}
-              placeholder="Add new task (try using #tags)..."
+              placeholder="Add new task (try using #tags)... Alt + d to mark it done"
               className="task-input new-task-input"
             />
           </div>
