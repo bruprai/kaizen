@@ -1,4 +1,32 @@
-# Kaizen Task Store
+# Kaizen - Daily progress tracker
+
+### I've always wanted to create this app where user can write down content or tasks about the projects they are working on day to day basis. Main feature is that undone tasks will be migrated to the next day.
+
+#### There is task age which shows how many days ago a task was created.
+
+#### I've also added some features like:
+
+- Tags(which will be used to filter tasks by tags and differentiate between categories)
+- Keyboard shortcut Alt + d to mark the task done
+- Delete icon will be visible when you hover over the task.
+- Visit previous day's tasks
+- Plan tasks for the next day with #PFT tag which stands for plan for tomorrow
+- Local first
+
+### There are many features and improvements to implement:
+
+- [] Differentiate multiple projects by their own space
+- [] Weekly summary
+- [] Edit tags
+- [] Implement a search function to filter tasks by tags or project
+- [] Implement a notification system to remind users of upcoming tasks
+- [] Add auth and database
+
+#### Started with prop drilling and most of the state in App.tsx
+
+### Then added useTaskStore to manage the state but still alot of prop drilling
+
+### Next is to use the context api and then components can access the state without prop drilling.
 
 ### Used type safe string enum in for status field in task model to make it easier to read, compare and maintain. (Mainly because i missed Dart Enum functionality which i use quite often there).
 

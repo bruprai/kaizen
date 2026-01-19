@@ -24,11 +24,11 @@ export const migrateTasks = (oldStore: TaskStore, today: string): TaskStore => {
       task.history.push(task.currentDateKey);
       task.currentDateKey = today;
     }
-
-    if (task.tags.includes("plan for tomorrow")) {
+    // plan for tomorrow = pft
+    if (task.tags.includes("pft")) {
       task.currentDateKey = today;
       task.status = TASK_STATUSES.TODO;
-      task.tags = task.tags.filter((tag) => tag !== "plan for tomorrow");
+      task.tags = task.tags.filter((tag) => tag !== "pft");
     }
   });
   return rebuildIndexes(updatedTasks);
