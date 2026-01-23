@@ -200,15 +200,9 @@ export const DailyProgress: React.FC<props> = ({
               <>
                 <p className="migration-message">
                   {migratedTasks.length}{" "}
-                  {migratedTasks.length > 1 ? "entries" : "entry"} moved
+                  {migratedTasks.length > 1 ? "entries" : "entry"} moved to the
+                  next day
                 </p>
-                {migratedTasks.map((task) => (
-                  <p key={task.id}>
-                    {" "}
-                    "{task.content}" moved from {dateKey} to{" "}
-                    {task.currentDateKey}
-                  </p>
-                ))}
               </>
             )}
           </div>
