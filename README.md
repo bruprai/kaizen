@@ -1,5 +1,9 @@
 # Kaizen - Daily progress tracker
 
+## To run the project
+
+npm run dev
+
 ### I've always wanted to create this app where user can write down content or tasks about the projects they are working on day to day basis. Main feature is that undone tasks will be migrated to the next day.
 
 #### There is task age which shows how many days ago a task was created.
@@ -21,6 +25,7 @@
 - [] Implement a search function to filter tasks by tags or project
 - [] Implement a notification system to remind users of upcoming tasks
 - [] Add auth and database
+- [] Upgrade UI
 
 #### Started with prop drilling and most of the state in App.tsx
 
