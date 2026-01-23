@@ -1,5 +1,11 @@
 import { DIRECTION, REGEX, TASK_STATUSES } from "../constants";
 import type { TaskModel, TaskStore } from "../models/types";
+import { getDateKey } from "./dateUtils";
+
+export const getMigratedTasks = (
+  viewingDate: string,
+  tasks: TaskModel[]
+): TaskModel[] => tasks.filter((task) => task.history.includes(viewingDate));
 
 /// returns tags and content without tags
 export const processContent = (text: string, isFinal?: boolean) => {
@@ -20,7 +26,7 @@ export const migrateTasks = (oldStore: TaskStore, today: string): TaskStore => {
 
   Object.values(updatedTasks).forEach((task) => {
     if (task.status === TASK_STATUSES.TODO && task.currentDateKey < today) {
-      if (task.history) task.history = [];
+      if (!task.history) task.history = [];
       task.history.push(task.currentDateKey);
       task.currentDateKey = today;
     }
@@ -79,7 +85,9 @@ export const sortTasksByHierarchy = (tasks: TaskModel[]): TaskModel[] => {
   parents.forEach((parent) => {
     result.push(parent);
     const subtasks = children.filter((child) => child.parentId === parent.id);
-    result.push(...subtasks);
+    subtasks.forEach((subtask) => {
+      result.push(subtask);
+    });
   });
   console.log("sortTasksByHierarchy Result", result);
   return result;

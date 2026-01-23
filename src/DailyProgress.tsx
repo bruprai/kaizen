@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type onUpdateTaskParams, type TaskModel } from "./models/types";
-import { getParentId, processContent } from "./utils/taskUtils";
+import {
+  getMigratedTasks,
+  getParentId,
+  processContent,
+} from "./utils/taskUtils";
 import { TASK_STATUSES } from "./constants";
+import { useTaskStore } from "./hooks/useTaskStore";
 
 interface props {
   dateKey: string;
@@ -13,6 +18,7 @@ interface props {
 }
 
 export const DailyProgress: React.FC<props> = ({
+  dateKey,
   tasks,
   onAdd,
   onDelete,
@@ -21,7 +27,7 @@ export const DailyProgress: React.FC<props> = ({
 }) => {
   const [input, setInput] = useState<string>("");
   const [isNextSubtask, setIsNextSubtask] = useState(false);
-
+  const { store } = useTaskStore();
   const taskRefs = useRef<Map<string, HTMLInputElement | null>>(new Map());
 
   const focusItem = (targetIndex: number): void => {
@@ -57,11 +63,11 @@ export const DailyProgress: React.FC<props> = ({
         handleChange(task.id, task.content, { isFinal: true });
         (e.target as HTMLInputElement).blur();
       } else if (input.trim()) {
-        console.log("new task");
-        const lastTopLevelTask = [...tasks].reverse().find((t) => !t.parentId);
+        const lastTopLevelTask = [...tasks]
+          .reverse()
+          .find((t) => t.parentId === "");
         const parentId =
           isNextSubtask && lastTopLevelTask ? lastTopLevelTask.id : "";
-        console.log("parentId", parentId);
         onAdd(input, parentId);
         setInput("");
         setIsNextSubtask(false);
@@ -69,24 +75,14 @@ export const DailyProgress: React.FC<props> = ({
     }
     if (e.altKey && e.key.toLowerCase() === "d" && task) {
       e.preventDefault();
+      const nextStatus =
+        task.status === TASK_STATUSES.DONE
+          ? TASK_STATUSES.TODO
+          : TASK_STATUSES.DONE;
       onUpdate({
         taskId: task.id,
-        updates: { status: TASK_STATUSES.DONE },
+        updates: { status: nextStatus },
       });
-      if (task.parentId === "") {
-        const childrens = tasks.filter(
-          (subtask) => subtask.parentId === task.id
-        );
-        console.log("childrens", childrens);
-        if (childrens.length > 0) {
-          childrens.forEach((child) => {
-            onUpdate({
-              taskId: child.id,
-              updates: { status: TASK_STATUSES.DONE },
-            });
-          });
-        }
-      }
     }
     if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -121,7 +117,8 @@ export const DailyProgress: React.FC<props> = ({
       updates: { content: cleanContent, tags },
     });
   };
-
+  const allTasksArray = Object.values(store.tasks);
+  const migratedTasks = getMigratedTasks(dateKey, allTasksArray);
   return (
     <section className="daily-progress">
       <h1>Daily Progress</h1>
@@ -192,8 +189,29 @@ export const DailyProgress: React.FC<props> = ({
           </div>
         ))}
 
-        {!isToday && tasks.every((task) => task.content.trim() === "") && (
-          <p className="no-entry-message">No enteries for this day</p>
+        {!isToday && (
+          <div className="status-message-container">
+            {tasks.every((task) => task.content.trim() === "") &&
+              migratedTasks.length === 0 && (
+                <p className="no-entry-message">No enteries for this day</p>
+              )}
+
+            {migratedTasks.length !== 0 && (
+              <>
+                <p className="migration-message">
+                  {migratedTasks.length}{" "}
+                  {migratedTasks.length > 1 ? "entries" : "entry"} moved
+                </p>
+                {migratedTasks.map((task) => (
+                  <p key={task.id}>
+                    {" "}
+                    "{task.content}" moved from {dateKey} to{" "}
+                    {task.currentDateKey}
+                  </p>
+                ))}
+              </>
+            )}
+          </div>
         )}
         {isToday && (
           <div

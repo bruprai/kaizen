@@ -75,7 +75,9 @@ export const useTaskStore = () => {
       const oldTask = prev.tasks[params.taskId!];
       console.log("useStore: update task", oldTask);
       if (!oldTask) return prev;
-      const updatedTask = {
+      const updatedTasks = { ...prev.tasks };
+      const newStatus = params.updates?.status;
+      updatedTasks[params.taskId] = {
         ...oldTask,
         ...params.updates,
         tags: params.updates?.tags
@@ -84,11 +86,17 @@ export const useTaskStore = () => {
 
         updatedAt: getTimestamp(),
       };
-      console.log("udpated taks", updatedTask);
-      const updatedTasks = {
-        ...prev.tasks,
-        [params.taskId!]: updatedTask,
-      };
+      if (newStatus) {
+        Object.values(updatedTasks).forEach((task) => {
+          if (task.parentId === params.taskId) {
+            updatedTasks[task.id] = {
+              ...task,
+              status: newStatus,
+              updatedAt: getTimestamp(),
+            };
+          }
+        });
+      }
       return rebuildIndexes(updatedTasks);
     });
   };
