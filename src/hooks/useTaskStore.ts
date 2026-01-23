@@ -46,7 +46,7 @@ export const useTaskStore = () => {
     dateKey: string,
     parentId?: string
   ): string => {
-    const { tags, cleanContent } = processContent(content);
+    const { tags, cleanContent } = processContent(content, true);
 
     const taskId = crypto.randomUUID();
 

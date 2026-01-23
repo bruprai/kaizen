@@ -7,7 +7,6 @@ export const getMigratedTasks = (
   tasks: TaskModel[]
 ): TaskModel[] => tasks.filter((task) => task.history.includes(viewingDate));
 
-/// returns tags and content without tags
 export const processContent = (text: string, isFinal?: boolean) => {
   console.log("processContent text", text);
   const regex = isFinal ? REGEX.tagsInString : REGEX.tagsFollowedBySpace;
