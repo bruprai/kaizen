@@ -4,6 +4,12 @@
 
 npm run dev
 
+#### press tab for subtask
+
+#### press shift + tab to get back to the main level
+
+#### Press alt + d to mark it done
+
 ### I've always wanted to create this app where user can write down content or tasks about the projects they are working on day to day basis. Main feature is that undone tasks will be migrated to the next day.
 
 #### There is task age which shows how many days ago a task was created.
@@ -20,11 +26,14 @@ npm run dev
 ### There are many features and improvements to implement:
 
 - [] Differentiate multiple projects by their own space
+  - [x] First tag can act as category like different project names
+  - [x] Subtask inherited first tag automatically from the parent
 - [] Weekly summary
 - [] Edit tags
 - [] Implement a search function to filter tasks by tags or project
 - [] Implement a notification system to remind users of upcoming tasks
 - [] Add auth and database
+- [] Add context api and zustand later when features grow
 - [] Upgrade UI
 
 #### Started with prop drilling and most of the state in App.tsx

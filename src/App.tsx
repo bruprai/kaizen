@@ -1,4 +1,3 @@
-import "./App.css";
 import { getDateKey, getFormatedDate } from "./utils/dateUtils.ts";
 import { DailyProgress } from "./DailyProgress.tsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";

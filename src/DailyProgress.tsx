@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type onUpdateTaskParams, type TaskModel } from "./models/types";
 import {
+  getCategories,
   getMigratedTasks,
   getParentId,
   processContent,
@@ -11,7 +12,7 @@ import { useTaskStore } from "./hooks/useTaskStore";
 interface props {
   dateKey: string;
   tasks: TaskModel[];
-  onAdd: (text: string, parentId: string) => void;
+  onAdd: (text: string, parentId?: string) => void;
   onDelete: (taskId: string) => void;
   onUpdate: (params: onUpdateTaskParams) => void;
   isToday: boolean;
@@ -27,6 +28,9 @@ export const DailyProgress: React.FC<props> = ({
 }) => {
   const [input, setInput] = useState<string>("");
   const [isNextSubtask, setIsNextSubtask] = useState(false);
+  const [allCategories, setAllCategories] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
   const { store } = useTaskStore();
   const taskRefs = useRef<Map<string, HTMLInputElement | null>>(new Map());
 
@@ -44,7 +48,6 @@ export const DailyProgress: React.FC<props> = ({
     const currentIndex = task ? tasks.findIndex((t) => t.id === task.id) : -1;
     if (e.key === "Tab") {
       e.preventDefault();
-      console.log("tab tab");
       const direction = e.shiftKey ? "outdent" : "indent";
 
       if (task) {
@@ -68,6 +71,7 @@ export const DailyProgress: React.FC<props> = ({
           .find((t) => t.parentId === "");
         const parentId =
           isNextSubtask && lastTopLevelTask ? lastTopLevelTask.id : "";
+
         onAdd(input, parentId);
         setInput("");
         setIsNextSubtask(false);
@@ -89,7 +93,7 @@ export const DailyProgress: React.FC<props> = ({
       if (currentIndex === tasks.length - 1 || currentIndex === -1) {
         // If on last task or new task input, focus the new task input (or wrap to top)
         const newInnerInput = document.querySelector(
-          ".task-input"
+          ".task-input",
         ) as HTMLInputElement;
         newInnerInput?.focus();
       } else {
@@ -117,14 +121,58 @@ export const DailyProgress: React.FC<props> = ({
       updates: { content: cleanContent, tags },
     });
   };
+
+  const toggleCategories = () => {
+    console.log("toggleCategories");
+    setAllCategories((prev) => !prev);
+    setSelectedCategory(null);
+  };
+
+  const handleCategory = (category: string) => {
+    setSelectedCategory((prev) => (prev === category ? null : category));
+  };
   const allTasksArray = Object.values(store.tasks);
   const migratedTasks = getMigratedTasks(dateKey, allTasksArray);
+  const projectTags = getCategories(allCategories ? allTasksArray : tasks);
+
+  const filteredTasks = selectedCategory
+    ? tasks.filter(
+        (t) => t.tags[0]?.toLowerCase() === selectedCategory.toLowerCase(),
+      )
+    : tasks;
+  const isActiveCategory = (category: string) => category === selectedCategory;
   return (
     <section className="daily-progress">
       <h1>Daily Progress</h1>
-      <p>Track your daily activities and progress.</p>
+      <br />
+      <div className="categories">
+        {projectTags.map((category) => (
+          <div key={category}>
+            <button
+              className={`category-button ${
+                isActiveCategory(category) ? "active" : ""
+              }`}
+              onClick={() => handleCategory(category)}
+            >
+              {category}
+            </button>
+          </div>
+        ))}
+        <button
+          className="toggleButton"
+          style={allCategories ? { color: "#4CAF50" } : {}}
+          onClick={() => toggleCategories()}
+        >
+          Sort by{" "}
+          {!allCategories ? (
+            <span>All Categories</span>
+          ) : (
+            <span>Today's Categories</span>
+          )}
+        </button>
+      </div>
       <div className="progress-list">
-        {tasks.map((task) => (
+        {filteredTasks.map((task) => (
           <div
             key={task.id}
             className={`task-input-wrapper ${
@@ -157,7 +205,7 @@ export const DailyProgress: React.FC<props> = ({
             <div className="tags-overlay">
               {task.tags.map((tag) => (
                 <span key={task.id + tag} className="tag-pill">
-                  #{tag}
+                  {tag}
                 </span>
               ))}
               {task.history && task.history.length > 0 && (

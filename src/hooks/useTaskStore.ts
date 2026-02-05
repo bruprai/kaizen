@@ -47,7 +47,6 @@ export const useTaskStore = () => {
     parentId?: string
   ): string => {
     const { tags, cleanContent } = processContent(content, true);
-
     const taskId = crypto.randomUUID();
 
     const newTask: TaskModel = {
@@ -61,6 +60,13 @@ export const useTaskStore = () => {
       tags,
       history: [],
     };
+    if (parentId) {
+      const parentTask = store.tasks[parentId];
+      if (parentTask.tags.length > 0) {
+        const projectTag = parentTask.tags[0];
+        newTask.tags = [projectTag, ...tags.filter((t) => t !== projectTag)];
+      }
+    }
 
     setStore((prev) => {
       const updatedTasks = { ...prev.tasks, [taskId]: newTask };

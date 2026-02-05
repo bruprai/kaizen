@@ -1,10 +1,17 @@
 import { DIRECTION, REGEX, TASK_STATUSES } from "../constants";
 import type { TaskModel, TaskStore } from "../models/types";
-import { getDateKey } from "./dateUtils";
 
+export const getCategories = (tasks: TaskModel[]): string[] => {
+  const categories = new Set<string>();
+  tasks.forEach((task) => {
+    const projectTag = task.tags[0];
+    if (projectTag) categories.add(projectTag.toLowerCase());
+  });
+  return Array.from(categories).sort();
+};
 export const getMigratedTasks = (
   viewingDate: string,
-  tasks: TaskModel[]
+  tasks: TaskModel[],
 ): TaskModel[] => tasks.filter((task) => task.history.includes(viewingDate));
 
 export const processContent = (text: string, isFinal?: boolean) => {
@@ -61,7 +68,7 @@ export const rebuildIndexes = (tasks: Record<string, TaskModel>): TaskStore => {
 export const getParentId = (
   taskId: string | undefined,
   direction: "indent" | "outdent",
-  tasksInView: TaskModel[]
+  tasksInView: TaskModel[],
 ): string | null => {
   console.log("Direction", direction);
   if (direction === DIRECTION.outdent) return null;

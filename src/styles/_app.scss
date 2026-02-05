@@ -1,0 +1,323 @@
+@use 'variables'as *;
+
+#root {
+    width: 100%;
+    margin: 1rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.app-name {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 3rem;
+    font-size: 6rem;
+    letter-spacing: 4px;
+    margin-top: 10rem;
+    font-weight: bold;
+    color: $dark-blue;
+    ;
+    font-family: "Roboto", sans-serif;
+
+    span {
+        &:first-child {
+            color: $accent-orange;
+            border-top: 3px solid $dark-blue;
+            ;
+        }
+
+        &:last-child {
+            border-bottom: 3px solid $dark-blue;
+            ;
+        }
+    }
+}
+
+.progress-container {
+    width: 100%;
+    transition: all 0.4s ease-out;
+
+    &.slide-in {
+        animation: slideFromLeft 0.5s ease-out;
+    }
+
+    &.fade-in {
+        animation: fadeInOpacity 0.6s ease-in;
+    }
+}
+
+.date-display {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+
+    strong {
+        font-size: 36px;
+        margin: 5px;
+    }
+}
+
+.daily-progress {
+    margin-top: 100px;
+    color: $dark-blue;
+    text-align: left;
+    max-width: 1200px;
+    width: 70vw;
+}
+
+.categories {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    .category-button {
+
+        text-align: center;
+        font-weight: bold;
+        border: 2px solid transparent;
+        transition: 0.11s all ease-in-out;
+
+
+        &:hover {
+            border-color: $dark-blue;
+        }
+
+        &.active {
+            border: 2px solid $dark-blue;
+
+        }
+    }
+
+
+
+    .toggleButton {
+        margin-left: auto;
+        transition: 0.1s ease-in-out;
+        outline: none;
+
+        &:hover {
+            border: none;
+        }
+    }
+
+
+}
+
+.task-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    margin-left: 0;
+    transition:
+        margin-left 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.2s ease,
+        transform 0.3s ease;
+    opacity: 0.8;
+
+    &.is-subtask {
+        margin-left: 2rem;
+        border-left: 2px solid rgba(255, 255, 255, 0.1);
+        padding-left: 10px;
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: -1rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+    }
+
+    &:focus-within {
+        opacity: 1;
+        transform: translateX(4px);
+    }
+
+    // Hover states using nesting
+    &:hover {
+        .tags-overlay {
+            transform: translateX(-30px);
+        }
+
+        .task-age {
+            opacity: 1;
+        }
+
+        .delete-icon {
+            opacity: 0.4;
+        }
+    }
+
+    // Target input children
+    .task-input {
+        border: none;
+        border-radius: 4px;
+        background-color: $bg-input-gray;
+        color: #000;
+        padding: 16px 8px;
+        font-size: 1rem;
+        width: 100%;
+        padding-right: 100px;
+        outline: none;
+        box-sizing: border-box;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease-in-out;
+
+        &:focus {
+            background-color: $text-white;
+            border-color: $primary-blue;
+            box-shadow: 0 4px 12px rgba($primary-blue, 0.15);
+        }
+    }
+
+    // Contextual styling using :has
+    &:has(.task-age) .task-input {
+        border-left: 2px solid #ffd591;
+    }
+
+    &:has(.delete-icon:hover) {
+
+        .task-input,
+        .tag-pill {
+            opacity: 0.3 !important;
+            filter: grayscale(1);
+        }
+    }
+}
+
+.tags-overlay {
+    position: absolute;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+    pointer-events: none;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    .tag-pill {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        color: #888;
+
+        &:first-child {
+            color: $accent-orange;
+            font-weight: 600;
+        }
+    }
+
+    .task-age {
+        font-size: 0.65rem;
+        color: #999;
+        background: rgba(0, 0, 0, 0.05);
+        padding: 1px 4px;
+        border-radius: 3px;
+        margin-right: 4px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+    }
+}
+
+.delete-icon {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    background: none !important;
+    border: none !important;
+    cursor: pointer;
+    padding: 8px;
+    opacity: 0;
+    transition: all 0.2s ease-in-out;
+    z-index: 2;
+
+    &:hover {
+        opacity: 1 !important;
+        transform: scale(1.1);
+    }
+}
+
+.nav-curtain {
+    position: fixed;
+    top: 10%;
+    width: 100px;
+    height: 100vh;
+    opacity: 0.5;
+    transition: opacity 0.3s ease, background 0.5s ease-in-out;
+    pointer-events: all;
+    z-index: 100;
+    background-color: $primary-blue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &.left-curtain {
+        left: 0;
+        background: linear-gradient(to left, transparent, rgba(255, 255, 255, 0.05));
+        border-radius: 0 8px 8px 0;
+
+        &:hover {
+            opacity: 1;
+            background: linear-gradient(to left, transparent, rgba(48, 134, 192, 0.582) 50%, transparent 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+        }
+    }
+
+    &.right-curtain {
+        right: 0;
+        border-radius: 8px 0 0 8px;
+        background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.05));
+
+        &:hover {
+            opacity: 1;
+            background: linear-gradient(to right, transparent, rgba(48, 134, 192, 0.582) 50%, transparent 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear reverse;
+        }
+    }
+}
+
+// Grouping Keyframes at the bottom
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes slideFromLeft {
+    0% {
+        transform: translateX(-50px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInOpacity {
+    0% {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
