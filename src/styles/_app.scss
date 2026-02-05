@@ -155,7 +155,24 @@
         }
     }
 
-    // Target input children
+    // Contextual styling using :has
+    &:has(.task-age) .task-input {
+        border-left: 2px solid #ffd591;
+    }
+
+    &:has(.delete-icon:hover) {
+
+        .task-input,
+        .tag-pill {
+            opacity: 0.3 !important;
+            filter: grayscale(1);
+        }
+    }
+
+    & .fade {
+        opacity: 0.35;
+    }
+
     .task-input {
         border: none;
         border-radius: 4px;
@@ -170,79 +187,74 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         transition: all 0.2s ease-in-out;
 
+        &.completed {
+            text-decoration: line-through;
+        }
+
         &:focus {
             background-color: $text-white;
             border-color: $primary-blue;
             box-shadow: 0 4px 12px rgba($primary-blue, 0.15);
         }
+
     }
 
-    // Contextual styling using :has
-    &:has(.task-age) .task-input {
-        border-left: 2px solid #ffd591;
-    }
 
-    &:has(.delete-icon:hover) {
 
-        .task-input,
-        .tag-pill {
-            opacity: 0.3 !important;
-            filter: grayscale(1);
-        }
-    }
-}
 
-.tags-overlay {
-    position: absolute;
-    right: 10px;
-    display: flex;
-    gap: 5px;
-    pointer-events: none;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    .tag-pill {
-        background: rgba(255, 255, 255, 0.1);
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 0.7rem;
-        color: #888;
-
-        &:first-child {
-            color: $accent-orange;
-            font-weight: 600;
-        }
-    }
-
-    .task-age {
-        font-size: 0.65rem;
-        color: #999;
-        background: rgba(0, 0, 0, 0.05);
-        padding: 1px 4px;
-        border-radius: 3px;
-        margin-right: 4px;
-        font-weight: 500;
+    .tags-overlay {
+        position: absolute;
+        right: 10px;
         display: flex;
-        align-items: center;
-        opacity: 0.7;
-        transition: opacity 0.2s ease;
+        gap: 5px;
+        pointer-events: none;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        .tag-pill {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            color: #888;
+
+            &:first-child {
+                color: $accent-orange;
+                font-weight: 600;
+            }
+
+        }
+
+        .task-age {
+            font-size: 0.65rem;
+            color: #999;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 1px 4px;
+            border-radius: 3px;
+            margin-right: 4px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
     }
-}
 
-.delete-icon {
-    position: absolute;
-    right: 8px;
-    top: 8px;
-    background: none !important;
-    border: none !important;
-    cursor: pointer;
-    padding: 8px;
-    opacity: 0;
-    transition: all 0.2s ease-in-out;
-    z-index: 2;
+    .delete-icon {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        background: none !important;
+        border: none !important;
+        cursor: pointer;
+        padding: 8px;
+        opacity: 0;
+        transition: all 0.2s ease-in-out;
+        z-index: 2;
 
-    &:hover {
-        opacity: 1 !important;
-        transform: scale(1.1);
+        &:hover {
+            opacity: 1 !important;
+            transform: scale(1.1);
+        }
     }
 }
 

@@ -194,17 +194,15 @@ export const DailyProgress: React.FC<props> = ({
               onChange={(e) => {
                 handleChange(task.id, e.target.value, { isFinal: false });
               }}
-              className="task-input"
+              className={`task-input ${task.status === TASK_STATUSES.DONE ? "completed fade" : ""}`}
               readOnly={!isToday}
-              style={{
-                textDecoration:
-                  task.status === TASK_STATUSES.DONE ? "line-through" : "none",
-                opacity: task.status === TASK_STATUSES.DONE ? 0.6 : 1,
-              }}
             />
             <div className="tags-overlay">
               {task.tags.map((tag) => (
-                <span key={task.id + tag} className="tag-pill">
+                <span
+                  key={task.id + tag}
+                  className={`tag-pill ${task.status === TASK_STATUSES.DONE ? "fade" : ""}`}
+                >
                   {tag}
                 </span>
               ))}
