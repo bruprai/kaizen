@@ -8,34 +8,40 @@
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    font-family: $font-main;
+
 }
+
+
 
 .app-name {
     display: flex;
     justify-content: center;
-    margin-bottom: 3rem;
     font-size: 6rem;
     letter-spacing: 4px;
     margin-top: 10rem;
     font-weight: bold;
     color: $dark-blue;
-    ;
-    font-family: "Roboto", sans-serif;
+    font-family:$font-display;
 
     span {
         &:first-child {
             color: $accent-orange;
             border-top: 3px solid $dark-blue;
-            ;
+
         }
 
         &:last-child {
             border-bottom: 3px solid $dark-blue;
-            ;
+
         }
     }
 }
-
+.app-caption {
+    display: flex;
+    justify-content: center;
+    letter-spacing: 8px;
+}
 .progress-container {
     width: 100%;
     transition: all 0.4s ease-out;

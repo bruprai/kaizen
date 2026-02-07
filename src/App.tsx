@@ -42,10 +42,11 @@ function App() {
       <div className="nav-curtain right-curtain" onClick={() => changeDay(1)}>
         <span>→</span>
       </div>
-      <h1 className="app-name">
+      <div className="app-name">
         <span>Kai</span>
         <span>zen</span>
-      </h1>
+      </div>
+      <h3 className="app-caption">Daily Progress</h3>
       <section className="date-display">
         <span>
           <strong>{day}</strong>

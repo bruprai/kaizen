@@ -143,7 +143,6 @@ export const DailyProgress: React.FC<props> = ({
   const isActiveCategory = (category: string) => category === selectedCategory;
   return (
     <section className="daily-progress">
-      <h1>Daily Progress</h1>
       <br />
       <div className="categories">
         {projectTags.map((category) => (

@@ -25,7 +25,7 @@ npm run dev
 
 ### There are many features and improvements to implement:
 
-- [] Differentiate multiple projects by their own space
+- [x] Differentiate multiple projects by their own space
   - [x] First tag can act as category like different project names
   - [x] Subtask inherited first tag automatically from the parent
 - [] Weekly summary
