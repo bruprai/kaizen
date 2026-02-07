@@ -8,8 +8,7 @@
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    font-family: $font-main;
-
+    font-family: $font-text;
 }
 
 
@@ -22,7 +21,7 @@
     margin-top: 10rem;
     font-weight: bold;
     color: $dark-blue;
-    font-family:$font-display;
+    font-family: $font-display;
 
     span {
         &:first-child {
@@ -37,11 +36,13 @@
         }
     }
 }
+
 .app-caption {
     display: flex;
     justify-content: center;
     letter-spacing: 8px;
 }
+
 .progress-container {
     width: 100%;
     transition: all 0.4s ease-out;
@@ -73,6 +74,7 @@
     text-align: left;
     max-width: 1200px;
     width: 70vw;
+    font-weight: 500;
 }
 
 .categories {
@@ -97,8 +99,6 @@
 
         }
     }
-
-
 
     .toggleButton {
         margin-left: auto;
