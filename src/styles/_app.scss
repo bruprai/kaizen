@@ -40,7 +40,7 @@
 .app-caption {
     display: flex;
     justify-content: center;
-    letter-spacing: 8px;
+    letter-spacing: 4px;
 }
 
 .progress-container {
@@ -205,9 +205,6 @@
 
     }
 
-
-
-
     .tags-overlay {
         position: absolute;
         right: 10px;
@@ -305,7 +302,6 @@
     }
 }
 
-// Grouping Keyframes at the bottom
 @keyframes shimmer {
     0% {
         background-position: -200% 0;
