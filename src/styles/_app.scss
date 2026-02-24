@@ -150,6 +150,12 @@
     &:hover {
         .tags-overlay {
             transform: translateX(-30px);
+            max-width: 100%;
+
+        }
+
+        .tag-pill {
+            font-size: 0.88rem !important;
         }
 
         .task-age {
@@ -159,7 +165,13 @@
         .delete-icon {
             opacity: 0.4;
         }
-    }
+
+        .task-input {
+            color: transparent;
+            text-shadow:
+                0 0 5px rgba(141, 132, 132, 0.5),
+                0 0 10px rgba(0, 0, 0, 0.3);
+        }}
 
     // Contextual styling using :has
     &:has(.task-age) .task-input {
@@ -187,11 +199,11 @@
         padding: 16px 8px;
         font-size: 1rem;
         width: 100%;
-        padding-right: 100px;
+        padding-right: 140px;
         outline: none;
         box-sizing: border-box;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        transition: all 0.2s ease-in-out;
+        transition: all 0.1s ease-in-out;
 
         &.completed {
             text-decoration: line-through;
@@ -208,17 +220,20 @@
     .tags-overlay {
         position: absolute;
         right: 10px;
+        max-width: 100px;
         display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
         gap: 5px;
         pointer-events: none;
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow-x: hidden;
 
         .tag-pill {
-            background: rgba(255, 255, 255, 0.1);
             padding: 2px 6px;
             border-radius: 4px;
             font-size: 0.7rem;
-            color: #888;
+            color: $text-light;
 
             &:first-child {
                 color: $accent-orange;
@@ -226,6 +241,7 @@
             }
 
         }
+
 
         .task-age {
             font-size: 0.65rem;
