@@ -197,14 +197,6 @@ export const DailyProgress: React.FC<props> = ({
               readOnly={!isToday}
             />
             <div className="tags-overlay">
-              {task.tags.map((tag) => (
-                <span
-                  key={task.id + tag}
-                  className={`tag-pill ${task.status === TASK_STATUSES.DONE ? "fade" : ""}`}
-                >
-                  {tag}
-                </span>
-              ))}
               {task.history && task.history.length > 0 && (
                 <span
                   className="task-age"
@@ -213,6 +205,14 @@ export const DailyProgress: React.FC<props> = ({
                   {task.history.length}d
                 </span>
               )}
+              {task.tags.map((tag) => (
+                <span
+                  key={task.id + tag}
+                  className={`tag-pill ${task.status === TASK_STATUSES.DONE ? "fade" : ""}`}
+                >
+                  {tag !== selectedCategory ? tag : ""}
+                </span>
+              ))}
             </div>
             <div>
               <button className="delete-icon" onClick={() => onDelete(task.id)}>

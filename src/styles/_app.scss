@@ -141,10 +141,6 @@
         }
     }
 
-    &:focus-within {
-        opacity: 1;
-        transform: translateX(4px);
-    }
 
     // Hover states using nesting
     &:hover {
@@ -155,7 +151,7 @@
         }
 
         .tag-pill {
-            font-size: 0.88rem !important;
+            font-size: 0.85rem !important;
         }
 
         .task-age {
@@ -164,6 +160,7 @@
 
         .delete-icon {
             opacity: 0.4;
+            color: $text-light;
         }
 
         .task-input {
@@ -171,7 +168,54 @@
             text-shadow:
                 0 0 5px rgba(141, 132, 132, 0.5),
                 0 0 10px rgba(0, 0, 0, 0.3);
-        }}
+        }
+    }
+
+    &:focus-within {
+        transform: translateX(2px);
+        opacity: 1;
+
+        .tags-overlay {
+            // transform: translateX(0);
+            max-width: 100px !important;
+
+            .tag-pill {
+                opacity: 0.4;
+                color: $text-light;
+                font-size: 0.5rem !important;
+                transition: opacity 0.2s ease, color 0.2s ease, font-size 0.2s ease;
+            }
+
+        }
+
+
+
+        // &:has(.tags-overlay:hover) {
+
+        //     .task-input {
+        //         color: transparent;
+        //         text-shadow:
+        //             0 0 5px rgba(0, 0, 0, 0.5),
+        //             0 0 10px rgba(0, 0, 0, 0.3);
+        //         font-size: 0.85rem;
+        // }
+
+        // .tags-overlay:hover {
+        //     transform: translateX(-30px);
+        //     max-width: 100%;
+
+        //     .tag-pill {
+        //         opacity: 1;
+        //         color: #888;
+        //         font-size: 0.7rem;
+        //     }
+        // }
+
+        .delete-icon {
+            opacity: 0;
+        }
+
+    }
 
     // Contextual styling using :has
     &:has(.task-age) .task-input {
@@ -195,7 +239,7 @@
         border: none;
         border-radius: 4px;
         background-color: $bg-input-gray;
-        color: #000;
+        color: $text-light;
         padding: 16px 8px;
         font-size: 1rem;
         width: 100%;
@@ -213,6 +257,8 @@
             background-color: $text-white;
             border-color: $primary-blue;
             box-shadow: 0 4px 12px rgba($primary-blue, 0.15);
+            color: $text-light;
+            text-shadow: none;
         }
 
     }
@@ -225,14 +271,23 @@
         flex-wrap: nowrap;
         align-items: center;
         gap: 5px;
+
         pointer-events: none;
         transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         overflow-x: hidden;
 
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+
         .tag-pill {
+            font-size: 0.7rem;
             padding: 2px 6px;
             border-radius: 4px;
-            font-size: 0.7rem;
+
             color: $text-light;
 
             &:first-child {
@@ -240,6 +295,10 @@
                 font-weight: 600;
             }
 
+            &:hover {
+
+                transform: translateX(-30);
+            }
         }
 
 
@@ -249,13 +308,14 @@
             background: rgba(0, 0, 0, 0.05);
             padding: 1px 4px;
             border-radius: 3px;
-            margin-right: 4px;
+
             font-weight: 500;
             display: flex;
             align-items: center;
             opacity: 0.7;
             transition: opacity 0.2s ease;
         }
+
     }
 
     .delete-icon {
@@ -273,6 +333,9 @@
         &:hover {
             opacity: 1 !important;
             transform: scale(1.1);
+            color: $text-white;
+
+
         }
     }
 }
