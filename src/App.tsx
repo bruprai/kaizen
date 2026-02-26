@@ -3,6 +3,7 @@ import { DailyProgress } from "./DailyProgress.tsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTaskStore } from "./hooks/useTaskStore.ts";
 import { sortTasksByHierarchy } from "./utils/taskUtils.ts";
+import { ThemeToggle } from "./components/ThemeToggle.tsx";
 
 function App() {
   const { store, addTask, deleteTask, updateTask, getTasksByDateKey } =
@@ -36,6 +37,7 @@ function App() {
 
   return (
     <div className="app-container">
+      <ThemeToggle />
       <div className="nav-curtain left-curtain" onClick={() => changeDay(-1)}>
         <span>←</span>
       </div>

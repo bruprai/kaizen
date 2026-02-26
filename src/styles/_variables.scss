@@ -14,10 +14,11 @@ $text-light: #213547;
 
 // Component Colors
 $link-color: #646cff;
-$link-hover: #535bf2;
+$link-hover: $accent-orange-light;
 $btn-bg-dark: #1a1a1a;
 $btn-bg-light: #f9f9f9;
-$bg-input-gray: #eee;
+$bg-input-dark: #333;
+$bg-input-light: #eee;
 $text-white: #fff;
 
 $font-text: "Optimistic Text", Calibri;

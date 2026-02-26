@@ -28,3 +28,5 @@ export const APP_CONFIG = {
   NAME: "Kaizen",
   VERSION: "0.1.2",
 };
+
+export type Theme = "light" | "dark";

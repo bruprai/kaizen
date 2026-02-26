@@ -1,76 +1,147 @@
-@use 'variables'as *;
+@use "variables" as *;
 @use "sass:color";
 
 :root {
-    font-family: $font-text;
-    line-height: 1.5;
-    font-weight: 400;
-    color-scheme: light dark;
+  --font-text: #{$font-text};
+  --font-display: #{$font-display};
+  line-height: 1.5;
+  font-weight: 400;
+  --color-scheme: dark;
 
-    // Dark Mode (Default)
-    color: $text-dark;
-    background-color: $bg-dark;
+  --color-text-primary: #{$text-dark};
+  --color-background-primary: #{$bg-dark};
 
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  --color-background-input: #{$bg-input-dark};
+  --color-background-button: #{$btn-bg-dark};
 
-    // Light Mode Overrides
-    @media (prefers-color-scheme: light) {
-        color: $text-light;
-        background-color: $bg-light;
-    }
+  --color-dark-blue: #{$dark-blue};
+  --color-primary-blue: #{$primary-blue};
+  --color-accent-orange: #{$accent-orange};
+  --color-accent-orange-light: #{$accent-orange-light};
+  --color-black: #{$black};
+
+  --color-text: #{$text-light};
+  --color-text-white: #{$text-white};
+  --color-gray-999: #999;
+  --color-rgba-white-005: rgba(255, 255, 255, 0.05);
+  --color-rgba-white-01: rgba(255, 255, 255, 0.1);
+
+  --color-link: #{$link-color};
+  --color-link-hover: #{$link-hover};
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html[data-theme="light"] {
+  --color-scheme: light; // Light color scheme hint
+
+  // Primary Text & Background
+  --color-text-primary: #{$text-light}; // Primary text color for light theme
+  --color-background-primary: #{$bg-light}; // Primary background color for light theme
+
+  // Component Backgrounds
+  --color-background-input: #{$bg-input-light}; // Input background for light theme
+  --color-background-button: #{$btn-bg-light};
+
+  // Brand Colors (can be re-adjusted for light theme if desired, otherwise same)
+  --color-dark-blue: #{$dark-blue};
+  --color-primary-blue: #{$primary-blue};
+  --color-accent-orange: #{$accent-orange}; // Maybe a slightly darker orange for light theme for contrast
+  --color-accent-orange-light: #{$accent-orange-light};
+  --color-black: #{$black};
+
+  // Specific UI colors
+  --color-text: #{$text-dark}; // Adjusted, if this needs to be a specific color in light mode
+  --color-text-white: #{$text-white};
+  --color-gray-999: #666; // Darker gray for light theme
+  --color-rgba-white-005: rgba(0, 0, 0, 0.05); // For transparency in light mode
+  --color-rgba-white-01: rgba(0, 0, 0, 0.1);
+
+  // Link Colors (adjust hover for light theme)
+  --color-link: #{$link-color};
+  --color-link-hover: #{color.scale(
+      $link-hover,
+      $lightness: 15%,
+      $space: oklch
+    )};
 }
 
 body {
-    margin: 0;
-    display: flex;
-    place-items: center;
-    min-width: 320px;
-    min-height: 100vh;
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--color-text-primary);
+  background-color: var(--color-background-primary);
+  font-family: var(--font-text);
+  color-scheme: var(--color-scheme);
 }
 
 a {
-    font-weight: 500;
-    color: $link-color;
-    text-decoration: inherit;
+  font-weight: 500;
+  color: var(--color-link);
+  text-decoration: inherit;
 
-    &:hover {
-        color: $link-hover;
-
-        @media (prefers-color-scheme: light) {
-            color: color.scale($link-color, $lightness: 15%, $space: oklch);
-        }
-    }
+  &:hover {
+    color: var(--color-link-hover);
+  }
 }
 
 h1 {
-    font-size: 3.2em;
-    line-height: 1.1;
+  font-size: 3.2em;
+  line-height: 1.1;
 }
 
 button {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: $btn-bg-dark;
-    cursor: pointer;
-    transition: border-color 0.25s;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--color-background-button);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: border-color 0.25s;
 
-    &:hover {
-        border-color: $link-color;
-    }
+  &:hover {
+    border-color: var(--color-link-hover);
+  }
 
-    &:focus,
-    &:focus-visible {
-        outline: 4px auto -webkit-focus-ring-color;
-    }
+  &:focus,
+  &:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+  }
+}
 
-    @media (prefers-color-scheme: light) {
-        background-color: $btn-bg-light;
-    }
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--color-background-button);
+  color: var(--color-text-primary);
+  padding: 0.5em;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1000;
+
+  &:hover {
+    color: var(--color-link-hover) !important;
+    transform: scale(1.05);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--color-text-primary);
+  }
 }
