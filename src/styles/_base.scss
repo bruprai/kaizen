@@ -28,6 +28,7 @@
 
   --color-link: #{$link-color};
   --color-link-hover: #{$link-hover};
+  --color-theme-hover: #{$accent-orange-light};
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -67,6 +68,7 @@ html[data-theme="light"] {
       $lightness: 15%,
       $space: oklch
     )};
+  --color-theme-hover: #{$text-light};
 }
 
 body {
@@ -133,15 +135,19 @@ button {
   align-items: center;
   cursor: pointer;
   z-index: 1000;
+  border: none;
+  transition: all 0.1s ease-in;
 
   &:hover {
-    color: var(--color-link-hover) !important;
-    transform: scale(1.05);
+    color: var(--color-theme-hover) !important;
+    transform: scale(1.01);
+    svg {
+      fill: var(--color-theme-hover);
+    }
   }
 
   svg {
     width: 20px;
     height: 20px;
-    stroke: var(--color-text-primary);
   }
 }
