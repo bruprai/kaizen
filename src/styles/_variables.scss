@@ -1,8 +1,9 @@
 // Brand Colors
 $dark-blue: #48576e;
-$primary-green: #4CAF50;
+$primary-green: #4caf50;
 $primary-blue: #007bff;
-$accent-orange: #ffd591;
+$accent-orange: orange;
+$accent-orange-light: #ffd591;
 $black: #000;
 
 // Theme Colors
@@ -19,7 +20,5 @@ $btn-bg-light: #f9f9f9;
 $bg-input-gray: #eee;
 $text-white: #fff;
 
-$font-text: 'Optimistic Text',
-Calibri;
-$font-display: 'Optimistic Display',
-Calibri;
+$font-text: "Optimistic Text", Calibri;
+$font-display: "Optimistic Display", Calibri;
