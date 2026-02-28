@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Theme } from "../constants";
 
 const SunIcon = () => (
@@ -31,7 +31,7 @@ const MoonIcon = () => (
     height="24"
     viewBox="0 0 24 24"
     fill="none"
-    stroke="currentColor"
+    stroke="#000"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
@@ -39,33 +39,85 @@ const MoonIcon = () => (
     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
   </svg>
 );
+const SystemIcon = () => (
+  <svg width="204" height="204" viewBox="0 0 24 24">
+    <mask id="moonMask">
+      <rect x="0" y="0" width="100%" height="100%" fill="white" />
+
+      <circle cx="18" cy="6" r="8" fill="black" />
+    </mask>
+
+    <circle cx="12" cy="12" r="6" fill="currentColor" mask="url(#moonMask)" />
+
+    <g stroke="currentColor" stroke-width="1" stroke-linecap="round">
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </g>
+  </svg>
+);
 
 export const ThemeToggle = () => {
-  const [theme, setTheme] = useState<Theme>(() => {
+  const getInitalTheme = useCallback((): Theme => {
     const storedTheme = localStorage.getItem("theme");
-    if (storedTheme) {
-      return storedTheme as Theme;
+    if (
+      storedTheme === "light" ||
+      storedTheme === "dark" ||
+      storedTheme === "system"
+    ) {
+      return storedTheme;
     }
-    return window.matchMedia("(prefers-color-scheme-light)").matches
-      ? "light"
-      : "dark";
-  });
+    return "system";
+  }, []);
+  const [theme, setTheme] = useState<Theme>(getInitalTheme);
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
+    const applyTheme = (currentTheme: Theme) => {
+      if (currentTheme === "system") {
+        document.documentElement.removeAttribute("data-theme");
+      } else {
+        document.documentElement.setAttribute("data-theme", currentTheme);
+      }
+      localStorage.setItem("theme", theme);
+    };
+    applyTheme(theme);
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleSystemThemeChange = () => {
+      if (theme === "system") {
+        applyTheme("system");
+      }
+    };
+    mq.addEventListener("change", handleSystemThemeChange);
+    return () => {
+      mq.removeEventListener("change", handleSystemThemeChange);
+    };
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+    setTheme((prevTheme) => {
+      if (prevTheme === "dark") return "light";
+      if (prevTheme === "light") return "system";
+      return "dark";
+    });
   };
+  const renderIcon = () => {
+    if (theme === "light") return <MoonIcon />;
+    if (theme === "dark") return <SunIcon />;
+    return <SystemIcon />;
+  };
+
   return (
     <button
       className="theme-toggle"
       onClick={toggleTheme}
       aria-label="Toggle Theme"
     >
-      {theme === "light" ? <MoonIcon /> : <SunIcon />}
+      {renderIcon()}
     </button>
   );
 };

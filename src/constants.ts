@@ -29,4 +29,4 @@ export const APP_CONFIG = {
   VERSION: "0.1.2",
 };
 
-export type Theme = "light" | "dark";
+export type Theme = "light" | "dark" | "system";

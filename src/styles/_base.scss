@@ -1,11 +1,36 @@
 @use "variables" as *;
 @use "sass:color";
 
-:root {
-  --font-text: #{$font-text};
-  --font-display: #{$font-display};
-  line-height: 1.5;
-  font-weight: 400;
+@mixin light-theme-mixin {
+  --color-scheme: light;
+
+  --color-text-primary: #{$text-light};
+  --color-background-primary: #{$bg-light};
+
+  --color-background-input: #{$bg-input-light};
+  --color-background-button: #{$btn-bg-light};
+
+  --color-dark-blue: #{$dark-blue};
+  --color-primary-blue: #{$primary-blue};
+  --color-accent-orange: #{$accent-orange};
+  --color-black: #{$black};
+
+  --color-text-light-variant: #{$text-dark};
+  --color-text-white: #{$text-white};
+  --color-gray-999: #666;
+  --color-transparent-white-005: rgba(0, 0, 0, 0.05);
+  --color-transparent-white-01: rgba(0, 0, 0, 0.1);
+
+  --color-link: #{$link-color};
+  --color-link-hover: #{color.scale(
+      $link-color,
+      $lightness: 15%,
+      $space: oklch
+    )};
+  --color-theme-hover: #{$accent-orange-light};
+}
+
+@mixin dark-theme-mixin {
   --color-scheme: dark;
 
   --color-text-primary: #{$text-dark};
@@ -25,50 +50,34 @@
   --color-gray-999: #999;
   --color-rgba-white-005: rgba(255, 255, 255, 0.05);
   --color-rgba-white-01: rgba(255, 255, 255, 0.1);
+  --color-nav-curtain-hover: rgba(48, 134, 192, 0.582);
 
   --color-link: #{$link-color};
   --color-link-hover: #{$link-hover};
   --color-theme-hover: #{$accent-orange-light};
-
+}
+:root {
+  --font-text: #{$font-text};
+  --font-display: #{$font-display};
+  @include dark-theme-mixin();
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    @include light-theme-mixin();
+  }
+}
+
 html[data-theme="light"] {
-  --color-scheme: light; // Light color scheme hint
+  @include light-theme-mixin();
+}
 
-  // Primary Text & Background
-  --color-text-primary: #{$text-light}; // Primary text color for light theme
-  --color-background-primary: #{$bg-light}; // Primary background color for light theme
-
-  // Component Backgrounds
-  --color-background-input: #{$bg-input-light}; // Input background for light theme
-  --color-background-button: #{$btn-bg-light};
-
-  // Brand Colors (can be re-adjusted for light theme if desired, otherwise same)
-  --color-dark-blue: #{$dark-blue};
-  --color-primary-blue: #{$primary-blue};
-  --color-accent-orange: #{$accent-orange}; // Maybe a slightly darker orange for light theme for contrast
-  --color-accent-orange-light: #{$accent-orange-light};
-  --color-black: #{$black};
-
-  // Specific UI colors
-  --color-text: #{$text-dark}; // Adjusted, if this needs to be a specific color in light mode
-  --color-text-white: #{$text-white};
-  --color-gray-999: #666; // Darker gray for light theme
-  --color-rgba-white-005: rgba(0, 0, 0, 0.05); // For transparency in light mode
-  --color-rgba-white-01: rgba(0, 0, 0, 0.1);
-
-  // Link Colors (adjust hover for light theme)
-  --color-link: #{$link-color};
-  --color-link-hover: #{color.scale(
-      $link-hover,
-      $lightness: 15%,
-      $space: oklch
-    )};
-  --color-theme-hover: #{$text-light};
+html[data-theme="dark"] {
+  @include dark-theme-mixin();
 }
 
 body {
@@ -142,7 +151,7 @@ button {
     color: var(--color-theme-hover) !important;
     transform: scale(1.01);
     svg {
-      fill: var(--color-theme-hover);
+      fill: var(--color-text);
     }
   }
 
