@@ -23,7 +23,7 @@
 
   --color-link: #{$link-color};
   --color-link-hover: #{color.scale(
-      $link-color,
+      $link-hover,
       $lightness: 15%,
       $space: oklch
     )};

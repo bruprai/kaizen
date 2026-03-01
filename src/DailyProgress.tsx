@@ -8,6 +8,12 @@ import {
 } from "./utils/taskUtils";
 import { TASK_STATUSES } from "./constants";
 import { useTaskStore } from "./hooks/useTaskStore";
+import {
+  CategoriesIcon,
+  CategoriesIconAll,
+  SortAscIcon,
+  SortDescIcon,
+} from "./components/Icons";
 
 interface props {
   dateKey: string;
@@ -29,10 +35,27 @@ export const DailyProgress: React.FC<props> = ({
   const [input, setInput] = useState<string>("");
   const [isNextSubtask, setIsNextSubtask] = useState(false);
   const [allCategories, setAllCategories] = useState(false);
+  const [sortTasksByAge, setSortTasksByAge] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
 
   const { store } = useTaskStore();
   const taskRefs = useRef<Map<string, HTMLInputElement | null>>(new Map());
+
+  useEffect(() => {
+    const el = categoryScrollRef.current;
+    if (!el) return;
+
+    const handleCategoryScroll = (e: WheelEvent) => {
+      e.preventDefault();
+      el.scrollBy({
+        left: e.deltaY * 1.5,
+        behavior: "smooth",
+      });
+    };
+    el.addEventListener("wheel", handleCategoryScroll, { passive: false });
+    return () => el.removeEventListener("wheel", handleCategoryScroll);
+  }, []);
 
   const focusItem = (targetIndex: number): void => {
     if (targetIndex >= 0 && targetIndex < tasks.length) {
@@ -135,19 +158,41 @@ export const DailyProgress: React.FC<props> = ({
   const migratedTasks = getMigratedTasks(dateKey, allTasksArray);
   const projectTags = getCategories(allCategories ? allTasksArray : tasks);
 
-  const filteredTasks = selectedCategory
+  const categoryFilteredTasks = selectedCategory
     ? tasks.filter(
         (t) => t.tags[0]?.toLowerCase() === selectedCategory.toLowerCase(),
       )
     : tasks;
+
+  const displayTasks = !sortTasksByAge
+    ? [...categoryFilteredTasks].sort(
+        (t1, t2) =>
+          new Date(t2.createdAt).getTime() - new Date(t1.createdAt).getTime(),
+      )
+    : categoryFilteredTasks;
+
+  const toggleSortByAge = () => {
+    setSortTasksByAge((prev) => {
+      console.log("Toggling sort by age. New state:", !prev);
+      return !prev;
+    });
+  };
   const isActiveCategory = (category: string) => category === selectedCategory;
+
   return (
     <section className="daily-progress">
       <br />
       <div className="categories">
-        {projectTags.map((category) => (
-          <div key={category}>
+        <button
+          className="toggle-categories"
+          onClick={() => toggleCategories()}
+        >
+          {allCategories ? <CategoriesIconAll /> : <CategoriesIcon />}
+        </button>
+        <div className="category-button-container" ref={categoryScrollRef}>
+          {projectTags.map((category) => (
             <button
+              key={category}
               className={`category-button ${
                 isActiveCategory(category) ? "active" : ""
               }`}
@@ -155,23 +200,18 @@ export const DailyProgress: React.FC<props> = ({
             >
               {category}
             </button>
-          </div>
-        ))}
+          ))}
+        </div>
+
         <button
-          className="toggleButton"
-          style={allCategories ? { color: "#4CAF50" } : {}}
-          onClick={() => toggleCategories()}
+          className={`sort-button ${sortTasksByAge ? "active" : ""}`}
+          onClick={() => toggleSortByAge()}
         >
-          Sort by{" "}
-          {!allCategories ? (
-            <span>All Categories</span>
-          ) : (
-            <span>Today's Categories</span>
-          )}
+          {sortTasksByAge ? <SortDescIcon /> : <SortAscIcon />}
         </button>
       </div>
       <div className="progress-list">
-        {filteredTasks.map((task) => (
+        {displayTasks.map((task) => (
           <div
             key={task.id}
             className={`task-input-wrapper ${
