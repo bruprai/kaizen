@@ -189,7 +189,7 @@ export const DailyProgress: React.FC<props> = ({
         >
           {allCategories ? <CategoriesIconAll /> : <CategoriesIcon />}
         </button>
-        <div className="category-button-container" ref={categoryScrollRef}>
+        <div className="category-button-wrapper" ref={categoryScrollRef}>
           {projectTags.map((category) => (
             <button
               key={category}

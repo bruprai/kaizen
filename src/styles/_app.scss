@@ -77,7 +77,7 @@
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
-
+  position: relative;
   .toggle-categories {
     transition: 0.1s ease-in-out;
     outline: none;
@@ -91,7 +91,7 @@
       color: var(--color-link-hover);
     }
   }
-  .category-button-container {
+  .category-button-wrapper {
     display: flex;
     overflow-x: auto;
     scroll-behavior: smooth;
@@ -122,8 +122,7 @@
   }
   .sort-button {
     position: absolute;
-
-    right: 100px;
+    right: -48px;
     background: none;
     display: flex;
     align-items: center;
